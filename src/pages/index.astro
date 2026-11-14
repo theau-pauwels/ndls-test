@@ -1,0 +1,97 @@
+---
+import '../styles/global.css';
+const categories = [
+['Salutations','Messages du quotidien','hand'],['Se présenter','Identité & conversation','user-round'],['Pays et langues','Origines & nationalités','globe'],['École et cours','La vie à l’université','book-open'],
+['Prononciation','Alphabet & expressions','audio-lines'],['Mots interrogatifs','Poser les bonnes questions','circle-help'],['Verbes','Actions & conjugaisons','zap'],['Nombres','Compter en néerlandais','hash'],
+['Âge','Parler de soi','cake'],['Heure et transports','Temps & déplacements','clock'],['Dates et saisons','Calendrier & météo','calendar-days'],['Famille','Liens & relations','users'],
+['Cantine et loisirs','Manger & se divertir','coffee'],['Noms divers','Vocabulaire du quotidien','layers'],['Adjectifs et adverbes','Décrire et nuancer','sparkles'],['Vêtements','S’habiller','shirt'],
+['Couleurs et motifs','Décrire une tenue','palette'],['Phrases en contexte','Le vocabulaire dans la vie','message-circle']
+];
+---
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#f5f4ef"/>
+  <meta name="description" content="Nederlands Lab — flashcards, vocabulaire, l'heure, grammaire et examens blancs pour réviser efficacement le néerlandais."/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <title>Nederlands Lab — Apprendre, pratiquer, réussir.</title>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="brand-icon">N<span class="brand-dot">.</span></span><span class="brand-name">nederlands<span class="brand-secondary">lab</span><small>TON COACH DE RÉVISION</small></span></div>
+    <div class="side-label">ESPACE D’APPRENTISSAGE</div>
+    <nav class="side-nav" aria-label="Navigation principale">
+      <button class="nav-link active" data-view="home"><span class="nav-symbol">▦</span> Vue d’ensemble</button>
+      <button class="nav-link" data-view="cards"><span class="nav-symbol">▤</span> Flashcards</button>
+      <button class="nav-link" data-view="practice"><span class="nav-symbol">✎</span> Entraînement</button>
+      <button class="nav-link" data-view="clock"><span class="nav-symbol">◷</span> Lire l’heure</button>
+      <button class="nav-link" data-view="context"><span class="nav-symbol">❝</span> Mise en situation</button>
+      <button class="nav-link" data-view="grammar"><span class="nav-symbol">≡</span> Grammaire</button>
+      <button class="nav-link exam-nav" data-view="test"><span class="nav-symbol">✦</span> Test blanc <span class="side-pill">EXAMEN</span></button>
+    </nav>
+    <div class="side-label side-label-second">TON PARCOURS</div>
+    <div class="side-progress"><div class="mini-row"><span>Maîtrise globale</span><strong id="sidebar-percent">0%</strong></div><div class="progress-track"><div id="sidebar-bar" class="progress-fill"></div></div><p id="sidebar-mastered">0 mots maîtrisés</p></div>
+    <div class="side-bottom"><span class="status-dot"></span> Prêt pour lundi <span class="side-version">v1.0</span></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><button class="mobile-menu" id="menu-toggle" aria-label="Ouvrir le menu">☰</button><div class="breadcrumb">APPRENDRE <span>/</span> <b id="view-name">Vue d’ensemble</b></div><div class="topbar-right"><span class="streak-mark">✳</span> <b id="streak">0</b> <span>jour de suite</span><button class="icon-button" id="reset-button" title="Réinitialiser la progression" aria-label="Réinitialiser la progression">↺</button></div></header>
+    <div class="content">
+      <section class="view" id="view-home">
+        <div class="hero"><div class="hero-copy"><div class="eyebrow light"><span class="small-dot"></span> OBJECTIF : TEST DE NÉERLANDAIS</div><h1>Een beetje elke dag.<br/><em>Veel vooruitgang.</em></h1><p>Un peu chaque jour. Beaucoup de progrès.<br/>Apprends, teste-toi et arrive prêt le jour J.</p><button class="btn btn-white" id="hero-start">Commencer à réviser <span>↗</span></button></div><div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="hero-word w1">Hallo!</div><div class="hero-word w2">Goed bezig ✳</div><div class="hero-word w3">Dank je!</div><div class="hero-ring">NL<span>↗</span></div></div></div>
+        <div class="section-heading"><div><div class="eyebrow">TON TABLEAU DE BORD</div><h2>On en est où ?</h2></div><span class="quiet">Ta progression est sauvegardée automatiquement.</span></div>
+        <div class="stats-grid"><div class="stat-card"><div class="stat-top"><span>Vocabulaire disponible</span><span class="stat-icon peach">▤</span></div><strong id="stat-total">—</strong><small>mots & expressions</small></div><div class="stat-card"><div class="stat-top"><span>Mots maîtrisés</span><span class="stat-icon purple">✳</span></div><strong id="stat-mastered">0</strong><small id="stat-mastered-sub">À découvrir</small></div><div class="stat-card"><div class="stat-top"><span>À revoir aujourd’hui</span><span class="stat-icon yellow">↻</span></div><strong id="stat-due">0</strong><small>répétition espacée</small></div><div class="stat-card"><div class="stat-top"><span>Précision moyenne</span><span class="stat-icon green">◎</span></div><strong id="stat-accuracy">—</strong><small>sur tes réponses</small></div></div>
+        <div class="section-heading lower"><div><div class="eyebrow">CHOISIS TON ACTIVITÉ</div><h2>À toi de jouer.</h2></div></div>
+        <div class="activity-grid">
+          <button class="activity-card" data-view="cards"><span class="activity-illustration illustration-flash">Aa <i>↔</i></span><span class="activity-overline">01 / MÉMORISER</span><strong>Flashcards</strong><span>Retourne les cartes, retiens les mots.</span><span class="activity-arrow">↗</span></button>
+          <button class="activity-card" data-view="clock"><span class="activity-illustration illustration-clock">◷<i>12:30</i></span><span class="activity-overline">02 / COMPRENDRE</span><strong>Lire l’heure</strong><span>Maîtrise half, kwart, voor et over.</span><span class="activity-arrow">↗</span></button>
+          <button class="activity-card" data-view="context"><span class="activity-illustration illustration-context">“<i>...</i>”</span><span class="activity-overline">03 / APPLIQUER</span><strong>En situation</strong><span>Complète des phrases de la vraie vie.</span><span class="activity-arrow">↗</span></button>
+          <button class="activity-card" data-view="test"><span class="activity-illustration illustration-exam">A<span>✓</span></span><span class="activity-overline">04 / SE CHALLENGER</span><strong>Test blanc</strong><span>Un examen aléatoire, corrigé à la fin.</span><span class="activity-arrow">↗</span></button>
+        </div>
+        <div class="section-heading lower"><div><div class="eyebrow">TON VOCABULAIRE</div><h2>Explorer les catégories <span class="category-count">18</span></h2></div><button class="subtle-link" data-view="cards">Tout réviser ↗</button></div>
+        <div id="category-grid" class="category-grid">
+          {categories.map(([title,desc,icon],i)=><button class="category-card" data-category={i+1}><span class="category-index">{String(i+1).padStart(2,'0')}</span><span class="category-symbol">{icon==='clock'?'◷':icon==='shirt'?'♧':icon==='palette'?'◉':icon==='users'?'♧':icon==='hash'?'#':icon==='coffee'?'♨':icon==='globe'?'◎':icon==='book-open'?'▤':'✦'}</span><strong>{title}</strong><small>{desc}</small><span class="category-bottom"><span data-count={i+1}>— cartes</span><span>↗</span></span></button>)}
+        </div>
+      </section>
+      <section class="view hidden" id="view-cards">
+        <div class="page-heading"><div class="eyebrow">MODE MÉMORISATION</div><h1>Flashcards<span class="heading-dot">.</span></h1><p>Révèle la traduction, puis indique si tu connaissais la réponse. Les cartes difficiles reviendront plus souvent.</p></div>
+        <div class="control-panel"><label>CATÉGORIE <select class="select" id="cards-category"></select></label><label>DIRECTION <select class="select" id="cards-direction"><option value="fr-nl">Français → Néerlandais</option><option value="nl-fr">Néerlandais → Français</option><option value="mixed">Aléatoire ↔</option></select></label><label>PRIORITÉ <select class="select" id="cards-priority"><option value="all">Toutes les cartes</option><option value="due">À réviser maintenant</option><option value="weak">Mes difficultés</option></select></label><button class="btn btn-dark" id="cards-restart">Nouvelle série ↻</button></div>
+        <div class="study-header"><span id="cards-counter">Carte 1 / —</span><span id="cards-progress-text">Un mot à la fois</span></div><div class="progress-track study-track"><div class="progress-fill" id="cards-bar"></div></div>
+        <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="Retourner la carte"><span class="flashcard-top"><span id="card-label">TRADUIS EN NÉERLANDAIS</span><span class="flip-icon">↻</span></span><span class="flashcard-center"><span id="card-question">Chargement…</span><span class="flashcard-hint" id="card-hint">Clique pour révéler la traduction</span></span><span class="flashcard-footer">ESPACE POUR RETOURNER LA CARTE <span>✳</span></span></div>
+        <div class="answer-actions hidden" id="card-actions"><button class="btn btn-error" id="card-again">✕ À revoir</button><button class="btn btn-success" id="card-know">✓ Je savais</button></div><div class="center-note" id="card-placeholder">Appuie sur la carte ou sur la barre d’espace.</div>
+      </section>
+      <section class="view hidden" id="view-practice">
+        <div class="page-heading"><div class="eyebrow">MODE ENTRAÎNEMENT</div><h1>À toi de traduire<span class="heading-dot">.</span></h1><p>Écris la réponse, vérifie, puis comprends tes erreurs. Pas besoin de traduire mot pour mot les variantes acceptées.</p></div>
+        <div class="control-panel"><label>CATÉGORIE <select class="select" id="practice-category"></select></label><label>DIRECTION <select class="select" id="practice-direction"><option value="fr-nl">Français → Néerlandais</option><option value="nl-fr">Néerlandais → Français</option><option value="mixed">Aléatoire ↔</option></select></label><button class="btn btn-dark" id="practice-restart">Recommencer ↻</button></div>
+        <div id="practice-area"></div>
+      </section>
+      <section class="view hidden" id="view-clock">
+        <div class="page-heading"><div class="eyebrow">ATELIER · DE KLOK LEZEN</div><h1>Quelle heure est-il <span class="heading-dot">?</span></h1><p>Du cadran aux expressions néerlandaises : entraîne-toi dans les deux sens, avec des explications adaptées à tes erreurs.</p></div>
+        <div class="lesson-strip"><span class="lesson-icon">💡</span><div><strong>La règle à retenir</strong><p><b>half drie</b> = 2 h 30, pas 3 h 30 ! <b>over</b> signifie « après », <b>voor</b> signifie « avant » et <b>kwart</b> signifie « quart ».</p></div></div>
+        <div class="control-panel"><label>DIRECTION <select class="select" id="clock-direction"><option value="fr-nl">Heure → Néerlandais</option><option value="nl-fr">Néerlandais → Heure</option><option value="mixed">Aléatoire ↔</option></select></label><label>DIFFICULTÉ <select class="select" id="clock-level"><option value="basic">Les heures classiques (5 min)</option><option value="advanced">Toutes les minutes</option></select></label><button class="btn btn-dark" id="clock-next">Autre heure ↻</button></div>
+        <div id="clock-area"></div>
+      </section>
+      <section class="view hidden" id="view-context">
+        <div class="page-heading"><div class="eyebrow">MODE MISE EN SITUATION</div><h1>Parlons néerlandais<span class="heading-dot">.</span></h1><p>Choisis la bonne expression dans des dialogues et des phrases inspirés du cours.</p></div><div id="context-area"></div>
+      </section>
+      <section class="view hidden" id="view-grammar">
+        <div class="page-heading"><div class="eyebrow">ANTISÈCHE INTERACTIVE</div><h1>La grammaire, en clair<span class="heading-dot">.</span></h1><p>Les règles essentielles des leçons 1 à 4, expliquées avec leurs pièges et exemples.</p></div><div id="grammar-list" class="grammar-list"></div>
+      </section>
+      <section class="view hidden" id="view-test">
+        <div class="page-heading"><div class="eyebrow">CONDITIONS D’EXAMEN</div><h1>Le test blanc<span class="heading-dot">.</span></h1><p>Un tirage aléatoire de questions. Aucune correction pendant l’épreuve : découvre ton score et toutes les explications à la fin.</p></div>
+        <div id="test-config" class="exam-config"><div class="exam-big-icon">✦</div><h2>Prêt à te tester ?</h2><p>Personnalise ton examen, puis lance-toi.</p><div class="exam-fields"><label>NOMBRE DE QUESTIONS<select class="select" id="test-count"><option>10</option><option selected>20</option><option>30</option><option>50</option><option>75</option><option>100</option></select></label><label>TYPE DE QUESTIONS<select class="select" id="test-type"><option value="mixed">Mix complet</option><option value="vocab">Vocabulaire uniquement</option><option value="clock">L’heure uniquement</option><option value="context">Situations & grammaire</option></select></label><label>DIRECTION<select class="select" id="test-direction"><option value="mixed">Les deux sens ↔</option><option value="fr-nl">Français → Néerlandais</option><option value="nl-fr">Néerlandais → Français</option></select></label></div><button class="btn btn-dark btn-wide" id="test-start">Démarrer le test ↗</button></div>
+        <div id="test-active" class="hidden"></div><div id="test-results" class="hidden"></div>
+      </section>
+      <footer class="footer">NEDERLANDS LAB <span>·</span> FAIT POUR APPRENDRE, PAS JUSTE RÉCITER <span>·</span> BASÉ SUR LE COURS UMONS</footer>
+    </div>
+  </main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>import '../scripts/app.js';</script>
+</body>
+</html>

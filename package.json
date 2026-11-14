@@ -1,0 +1,18 @@
+{
+  "name": "ndls-test",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check:logic": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.4.12"
+  },
+  "engines": {
+    "node": ">=22.16.0"
+  }
+}

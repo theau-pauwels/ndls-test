@@ -96,6 +96,7 @@ function sayTime(h,m){
  else phrase=nlNum(60-m)+' voor '+next;
  return phrase;
 }
+function clockSpoken(h,m){if(h===0&&m===0)return 'middernacht';if(h===12&&m===0)return 'middag';return sayTime(h,m)+(h<6?" 's nachts":h<12?" 's ochtends":h<18?" 's middags":" 's avonds")}
 function printTime(h,m){return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
 function clockExplanation(h,m){
  const following=hourName(h+1);
@@ -111,19 +112,19 @@ function newClock(){
  const dir=dirFor($('clock-direction').value);clockQuestion={h,m,dir,id:'clock-'+printTime(h,m)};
  let html='<div class="question-panel"><div class="question-top"><span>'+(dir==='fr-nl'?'HEURE → NÉERLANDAIS':'NÉERLANDAIS → HEURE')+'</span><span>DE KLOK LEZEN</span></div>';
  if(dir==='fr-nl'){html+='<div class="clock-display"><div class="clock-face" id="clock-face"><div class="clock-hand hour" style="transform:rotate('+((h%12)*30+m/2)+'deg)"></div><div class="clock-hand minute" style="transform:rotate('+(m*6)+'deg)"></div></div><div class="clock-digital">'+printTime(h,m)+'</div></div><div class="question-caption">Comment dit-on cette heure en néerlandais ? (sans préciser le moment de la journée)</div>'}
- else html+='<div class="question-prompt">'+safe(sayTime(h,m))+'</div><div class="question-caption">Quelle heure indique cette expression ? Le néerlandais utilise un cadran de 12 h.</div>';
- const answers=dir==='fr-nl'?[sayTime(h,m)]:[printTime(h%12,m)];
+ else html+='<div class="question-prompt">'+safe(clockSpoken(h,m))+'</div><div class="question-caption">Quelle heure indique cette expression ? Le néerlandais utilise un cadran de 12 h.</div>';
+ const answers=dir==='fr-nl'?[clockSpoken(h,m)]:[printTime(h,m)];
  if(dir==='fr-nl'){
-  const other=shuffle(Array.from({length:24},()=>{let oh=Math.floor(Math.random()*12)+1,om=Math.floor(Math.random()*12)*5;return sayTime(oh,om)})).filter(x=>x!==answers[0]);const choices=shuffle([answers[0],...new Set(other)].slice(0,4));clockQuestion.expected=answers[0];clockQuestion.choices=choices;
+  const other=shuffle(Array.from({length:24},()=>{let oh=Math.floor(Math.random()*24),om=Math.floor(Math.random()*12)*5;return clockSpoken(oh,om)})).filter(x=>x!==answers[0]);const choices=shuffle([answers[0],...new Set(other)].slice(0,4));clockQuestion.expected=answers[0];clockQuestion.choices=choices;
  }else{
-  const other=shuffle(Array.from({length:24},()=>printTime(Math.floor(Math.random()*12),Math.floor(Math.random()*12)*5))).filter(x=>x!==answers[0]);clockQuestion.expected=answers[0];clockQuestion.choices=shuffle([answers[0],...new Set(other)].slice(0,4));
+  const other=shuffle(Array.from({length:24},()=>printTime(Math.floor(Math.random()*24),Math.floor(Math.random()*12)*5))).filter(x=>x!==answers[0]);clockQuestion.expected=answers[0];clockQuestion.choices=shuffle([answers[0],...new Set(other)].slice(0,4));
  }
  html+='<div class="options-grid">'+clockQuestion.choices.map(x=>'<button class="option" data-clock-choice="'+safe(x)+'">'+safe(x)+'</button>').join('')+'</div><div id="clock-feedback"></div><div class="question-actions"><button id="clock-continue" class="btn btn-dark hidden">Question suivante →</button></div></div>';
  $('clock-area').innerHTML=html;
  if(dir==='fr-nl'){for(let i=1;i<=12;i++){const a=(i/12)*Math.PI*2-Math.PI/2;const span=document.createElement('span');span.className='clock-number';span.textContent=i;span.style.left=(50+40*Math.cos(a))+'%';span.style.top=(50+40*Math.sin(a))+'%';$('clock-face').appendChild(span)}}
  $$('[data-clock-choice]').forEach(el=>el.addEventListener('click',()=>{if(clockDone)return;clockDone=true;const correct=el.dataset.clockChoice===clockQuestion.expected;mark(clockQuestion.id,correct);
   $$('[data-clock-choice]').forEach(b=>{b.disabled=true;if(b.dataset.clockChoice===clockQuestion.expected)b.classList.add('correct')});if(!correct)el.classList.add('wrong');
-  $('clock-feedback').innerHTML='<div class="feedback '+(correct?'':'bad')+'"><strong>'+(correct?'✓ Exact !':'✕ Fais attention au cadran.')+'</strong><p>Réponse : <b>'+safe(sayTime(h,m))+'</b> = <b>'+printTime(h,m)+'</b> (ou '+printTime(h%12,m)+' sur 12 h).</p><p>'+clockExplanation(h,m)+'</p></div>';$('clock-continue').classList.remove('hidden');
+  $('clock-feedback').innerHTML='<div class="feedback '+(correct?'':'bad')+'"><strong>'+(correct?'✓ Exact !':'✕ Fais attention au cadran.')+'</strong><p>Réponse : <b>'+safe(clockSpoken(h,m))+'</b> = <b>'+printTime(h,m)+'</b> (ou '+printTime(h%12,m)+' sur 12 h).</p><p>'+clockExplanation(h,m)+'</p></div>';$('clock-continue').classList.remove('hidden');
  }));
  $('clock-continue').addEventListener('click',newClock);
 }
@@ -147,7 +148,7 @@ const situations=[
  {q:'Tu veux dire « Je me réveille ».',a:'Ik word wakker.',wrong:['Ik ben wakker worden.','Ik wakker word.','Ik wordt wakker.'],why:'wakker worden = se réveiller ; avec ik, word sans -t.'},
  {q:'Tu dis « En ce moment, je ne travaille pas ».',a:'Momenteel werk ik niet.',wrong:['Momenteel ik werk niet.','Momenteel werkt ik niet.','Momenteel werk niet ik.'],why:'Le verbe conjugué reste en 2e position : Momenteel + werk + ik.'},
  {q:'Demande à quelle heure commence le cours.',a:'Hoe laat begint de les?',wrong:['Hoeveel begint de les?','Waar komt de les?','Hoe oud is de les?'],why:'Hoe laat? = À quelle heure ? ; beginnen = commencer.'},
- {q:'Quelqu’un te dit « Dank je! ». Comment répondre poliment ?',a:'Graag gedaan!',wrong:['Tot morgen!','Ik weet het niet.','Goedemorgen!'],why:'Graag gedaan signifie « de rien », une réponse courante à dank je.'},
+ {q:'Tu dis « Non merci » en néerlandais.',a:'Nee, dank je',wrong:['Tot morgen!','Ik weet het niet.','Goedemorgen!'],why:'Nee, dank je = Non merci, expression des salutations du cours.'},
  {q:'Comment traduire « Il porte des lunettes » ?',a:'Hij draagt een bril.',wrong:['Hij doet een bril uit.','Hij heeft een schoenen.','Hij is de bril.'],why:'dragen = porter ; de bril = les lunettes.'},
  {q:'On te demande « Hoeveel broers en zussen heb je? ». On parle de…',a:'tes frères et sœurs',wrong:['tes parents','tes langues parlées','tes cours'],why:'Hoeveel = combien ; broer(s) = frère(s) ; zus(sen) = sœur(s).'}
 ];
@@ -178,7 +179,7 @@ function newTest(){
  const vocabPool=shuffle(vocabulary),contexts=shuffle(situations);
  const candidates=[];const vocabLimit=type==='vocab'?count:type==='mixed'?Math.round(count*.55):0;const clockLimit=type==='clock'?count:type==='mixed'?Math.round(count*.25):0;const contextLimit=type==='context'?count:type==='mixed'?count-vocabLimit-clockLimit:0;
  for(let i=0;i<vocabLimit;i++){let v=vocabPool[i%vocabPool.length],s=getSides(v,dirFor(direction));candidates.push({id:v.id,type:'text',prompt:s.prompt,answer:s.answer,tag:'VOCABULAIRE',why:'Catégorie : '+categoryNames[v.category-1]+'. Vérifie les articles, le radical et l’ordre des mots.'})}
- for(let i=0;i<clockLimit;i++){const h=Math.floor(Math.random()*24),m=Math.floor(Math.random()*12)*5,dir=dirFor(direction),correct=dir==='fr-nl'?sayTime(h,m):printTime(h%12,m);const distractors=new Set();for(let n=0;n<35&&distractors.size<3;n++){let oh=Math.floor(Math.random()*12),om=Math.floor(Math.random()*12)*5;let other=dir==='fr-nl'?sayTime(oh,om):printTime(oh,om);if(other!==correct)distractors.add(other)}candidates.push({id:'clock-'+printTime(h,m),type:'choice',prompt:dir==='fr-nl'?'Comment dit-on '+printTime(h,m)+' en néerlandais ?':sayTime(h,m)+' = quelle heure ?',answer:correct,options:shuffle([correct,...[...distractors].slice(0,3)]),tag:'L’HEURE',why:'Règle : '+clockExplanation(h,m).replace(/<[^>]+>/g,'')})}
+ for(let i=0;i<clockLimit;i++){const h=Math.floor(Math.random()*24),m=Math.floor(Math.random()*12)*5,dir=dirFor(direction),correct=dir==='fr-nl'?sayTime(h,m):printTime(h%12,m);const distractors=new Set();for(let n=0;n<35&&distractors.size<3;n++){let oh=Math.floor(Math.random()*24),om=Math.floor(Math.random()*12)*5;let other=dir==='fr-nl'?clockSpoken(oh,om):printTime(oh,om);if(other!==correct)distractors.add(other)}candidates.push({id:'clock-'+printTime(h,m),type:'choice',prompt:dir==='fr-nl'?'Comment dit-on '+printTime(h,m)+' en néerlandais ?':clockSpoken(h,m)+' = quelle heure ?',answer:correct,options:shuffle([correct,...[...distractors].slice(0,3)]),tag:'L’HEURE',why:'Règle : '+clockExplanation(h,m).replace(/<[^>]+>/g,'')})}
  for(let i=0;i<contextLimit;i++){let q=contexts[i%contexts.length];candidates.push({id:'ctx-'+situations.indexOf(q),type:'choice',prompt:q.q,answer:q.a,options:shuffle([q.a,...q.wrong]),tag:'SITUATION',why:q.why})}
  testItems=shuffle(candidates).slice(0,count).map(q=>({...q,selected:''}));testLive=true;
  $('test-config').classList.add('hidden');$('test-results').classList.add('hidden');$('test-active').classList.remove('hidden');
